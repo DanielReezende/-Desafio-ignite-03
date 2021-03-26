@@ -21,41 +21,25 @@ const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount } = useCart();
 
   const cartFormatted = cart.map(product => ({
-    ...product, 
-    priceFormatted: formatPrice(product.price),
-    subTotal:  formatPrice(product.price * product.amount)
+    ...product,
+    priceFormatted: formatPrice(product.price)
   }))
-
 
   const total =
     formatPrice(
-      cart.reduce((sumTotal, product) => {
-        sumTotal += product.price * product.amount
-
-        return sumTotal
-      }, 0)
+      cart.reduce((sumTotal, product) => sumTotal + product.amount * product.price, 0)
     )
 
   function handleProductIncrement(product: Product) {
-    const incrementArguments = {
-      productId: product.id,
-      amount: product.amount + 1
-    }
-
-    updateProductAmount(incrementArguments)
+    updateProductAmount({ productId: product.id, amount: product.amount + 1 })
   }
 
   function handleProductDecrement(product: Product) {
-    const decrementArguments = {
-      productId: product.id,
-      amount: product.amount - 1
-    }
-
-    updateProductAmount(decrementArguments)
+    updateProductAmount({ productId: product.id, amount: product.amount - 1 })
   }
 
   function handleRemoveProduct(productId: number) {
-    removeProduct(productId);
+    removeProduct(productId)
   }
 
   return (
@@ -71,8 +55,8 @@ const Cart = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          { cartFormatted.map(product => (
-            <tr data-testid="product">
+          {cartFormatted.map(product => (
+            <tr data-testid="product" key={product.id}>
               <td>
                 <img src={product.image} alt={product.title} />
               </td>
@@ -106,7 +90,7 @@ const Cart = (): JSX.Element => {
                 </div>
               </td>
               <td>
-                <strong>{product.subTotal}</strong>
+                <strong>{formatPrice(product.amount * product.price)}</strong>
               </td>
               <td>
                 <button
